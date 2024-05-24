@@ -1,0 +1,71 @@
+<?php
+
+/** Autore: Raffaele Bordo
+ *  For: MGVision
+ *  Versione: pre-alpha
+ * 
+ * Descrizione: uno scriptarello per interrogare il database.
+ * Pesca tutti i valori delle tabelle [post_url], [meta_title] e [meta_description] di Yoast e te le salvo in Downloads!
+ * In teoria dovrebbe essere la stessa identica roba che fa Yoast Pro, ovvero:
+ * interroga il database del sito wp ed esporta tutti i dati dell'interrogazione in un csv.
+ * Pure perchè non è che Yoast sia scienza missilistica eh...
+ * 
+ * Digita [urldelsito]/esporta-yoast.php, a seconda della complessità della tabella, verrà generato un csv e salvato in locale.
+ * 
+ * Aggiungo un parametro admin per sicurezza, ma sto script va cancellato assolutamente dall'ftp
+ * dato che l'ho prodotto durante la pausa pranzo e non è che mi sono messo a fare tante sanificazioni...
+ *
+**/
+
+require_once('wp-load.php');
+
+if (!current_user_can('administrator')) {
+    wp_die('Permesso negato, devi essere admin per fare sta cosa, amico mio! :)');
+}
+
+global $wpdb;
+
+// Interrogo il database
+$results = $wpdb->get_results("
+    SELECT post_id,
+           MAX(CASE WHEN meta_key = '_yoast_wpseo_title' THEN meta_value END) AS meta_title,
+           MAX(CASE WHEN meta_key = '_yoast_wpseo_metadesc' THEN meta_value END) AS meta_description
+    FROM {$wpdb->prefix}postmeta
+    WHERE meta_key IN ('_yoast_wpseo_title', '_yoast_wpseo_metadesc')
+    GROUP BY post_id
+");
+
+// Imposto gli header http per salvare il file generato in locale, gli imposto pure la codifica UTF-8
+header('Content-Type: text/csv; charset=UTF-8');
+header('Content-Disposition: attachment;filename="meta_yoast_esportato.csv"');
+
+// Apri il "file" di output per PHP: output stream
+$output = fopen('php://output', 'w');
+if ($output === false) {
+    wp_die('Errore nella creazione del file CSV, tabelle vuote o corrotte. Prova a riparare le tabelle del db.');
+}
+
+// Scrivo il BOM per UTF-8, questo per aiutare alcuni programmi di calcolo per riconoscere le lettere accentate
+// invece delle lettere sballate tipo Ã
+// Dato che sono nerd, poi vi spiego cos'è un BOM
+fwrite($output, "\xEF\xBB\xBF");
+
+// Splitto il csv in 3 colonne separate
+fputcsv($output, ['post_url', 'meta_title', 'meta_description']);
+
+// Qui printo i risultati e li assegno alle colonne splittate del csv
+foreach ($results as $row) {
+    $post_url = get_permalink($row->post_id);
+    fputcsv($output, [$post_url, $row->meta_title, $row->meta_description]);
+}
+
+fclose($output);
+exit;
+
+/** NOTA BENE: il file generato sarà sicuramente sporco,
+ * specialmente se nei testi del sito ci stanno dei caratteri accentati o delle funzioni specifiche
+ * (tipo boh, [titlename]/%funzione-di-pippo%)
+ * quindi il file csv va assolutamente PULITO prima di farci qualsiasi cosa. 
+*/
+
+?>
