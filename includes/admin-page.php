@@ -21,7 +21,7 @@ function espy_admin_page_content() {
             <?php wp_nonce_field('espy_export', 'espy_export_nonce'); ?>
             <input type="hidden" name="espy_export_action" value="export_csv">
             <p>
-                <input type="submit" class="button button-primary" value="Esporta tabelle">
+                <input type="submit" class="btn-primario" value="Esporta tabelle">
             </p>
         </form>
     </div>
