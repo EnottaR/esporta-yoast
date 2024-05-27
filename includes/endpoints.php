@@ -1,13 +1,11 @@
 <?php
 
-// Aggiungi l'azione per creare un endpoint personalizzato
 add_action('init', 'espy_register_export_yoast_endpoint');
 
 function espy_register_export_yoast_endpoint() {
     add_rewrite_rule('^esporta-yoast/?$', 'index.php?export_yoast=1', 'top');
 }
 
-// Aggiungi una query var per l'endpoint personalizzato
 add_filter('query_vars', 'espy_add_export_yoast_query_var');
 function espy_add_export_yoast_query_var($vars) {
     $vars[] = 'export_yoast';
