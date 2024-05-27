@@ -5,4 +5,3 @@ function espy_check_admin() {
         wp_die('Permesso negato');
     }
 }
-
