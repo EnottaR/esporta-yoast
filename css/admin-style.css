@@ -1,1 +1,24 @@
+/* css/admin-style.css */
+.wrap {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h1 {
+    color: #0073aa;
+}
+
+form p {
+    margin: 20px 0;
+}
+
+input.button.button-primary {
+    background-color: #0085ba;
+    border-color: #0073aa;
+    color: #ffffff;
+    text-decoration: none;
+    text-shadow: none;
+    box-shadow: none;
+}
 
