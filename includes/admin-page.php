@@ -16,7 +16,13 @@ function espy_add_admin_menu() {
 function espy_admin_page_content() {
     ?>
     <div class="wrap">
-        <h1>Esporta Yoast Meta</h1>
+        <div class="mg-setup-notice">
+            <h1>Esporta Yoast Meta</h1>
+        </div>
+            <div class="espy-info-box">
+            <p>Benvenuto nella pagina di amministrazione di Esporta Yoast Meta. Utilizza il pulsante sottostante per esportare i meta title e meta description di Yoast in un file CSV.</p>
+            <p>Se hai bisogno di assistenza, controlla la documentazione o contatta il supporto.</p>
+        </div>
         <form method="post" action="">
             <?php wp_nonce_field('espy_export', 'espy_export_nonce'); ?>
             <input type="hidden" name="espy_export_action" value="export_csv">
